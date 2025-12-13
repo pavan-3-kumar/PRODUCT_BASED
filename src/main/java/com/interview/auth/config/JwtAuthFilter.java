@@ -26,7 +26,7 @@ import lombok.Data;
 @Data
 public class JwtAuthFilter extends OncePerRequestFilter{
 
-    private final UserDetailsService userDetailsService_1;
+//    private final UserDetailsService userDetailsService_1;
 	// we are extending this because if there are multiple requests given by same user there is no need to apply filter 
 	// for all , apply only once per user. 
 	
@@ -36,9 +36,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    JwtAuthFilter(UserDetailsService userDetailsService_1) {
-        this.userDetailsService_1 = userDetailsService_1;
-    }
+//    JwtAuthFilter(UserDetailsService userDetailsService_1) {
+//        this.userDetailsService_1 = userDetailsService_1;
+//    }
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request ,HttpServletResponse respose , FilterChain filterChain) throws IOException, ServletException {
@@ -49,6 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 			username = jwtService.extractUsername(token);
 		}
 				
+//	SecurityContextHolder.getContext().getAuthentication() == null	checking against multiple filters trying to set the context within the same single request.
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			// if the username is not null from the token and securitycontext is null means first time the user is requesting so we need to set the securityContext
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);

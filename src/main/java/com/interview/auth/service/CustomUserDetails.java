@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.interview.auth.entities.UserInfo;
 import com.interview.auth.entities.UserRole;
 
-@Component
 public class CustomUserDetails extends UserInfo implements UserDetails{
 
 	    private String username;

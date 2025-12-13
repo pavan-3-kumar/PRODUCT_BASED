@@ -31,6 +31,7 @@ public class TokenController {
 
 	@PostMapping("auth/v1/login")
 	public ResponseEntity<?> AuthenticateandGenerateToken(@RequestBody AuthRequestDTO authRequestDto){
+		// even though we have bypassed this api in filter (which bypasses the jwtfilter) but below line indirectly connects with spring security and uses the UserDetailsService.
 		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getUsername(),authRequestDto.getPassword()));
 		if(authentication.isAuthenticated()) {
 			RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getUsername());

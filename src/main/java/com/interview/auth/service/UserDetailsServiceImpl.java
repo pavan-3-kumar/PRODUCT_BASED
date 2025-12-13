@@ -57,6 +57,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	    	// ValidationUtil.validateUserAttributes(userInfoDto);
 //	    	validationUtil.validateUserAttributes(userInfoDto);
 	    	userInfoDto.setPassword(passwordEncoder.encode(userInfoDto.getPassword()));
+	    	log.info(userInfoDto.getUsername());
 	    	if(Objects.nonNull(checkIfUserAlreadyExist(userInfoDto))) {
 	    		return false;
 	    	}

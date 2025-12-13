@@ -1,5 +1,6 @@
 package com.interview.auth.service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class RefreshTokenService {
 		UserInfo userInfoExtracted =  userRepository.findByUsername(username);
 		RefreshToken refreshToken = RefreshToken.builder()
 												.userInfo(userInfoExtracted)
-												.expiryDate(Instant.now().plusMillis(600000))
+												.expiryDate(Instant.now().plusMillis(Duration.ofHours(5).plusMinutes(40).toMillis()))
 												.token(UUID.randomUUID().toString())
 												.build();
 		return refreshTokenRepository.save(refreshToken);

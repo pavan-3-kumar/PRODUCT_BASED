@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ValidationUtil {
 
-    private final CustomUserDetails customUserDetails;
 	// Regex for checking complexity: 
 	// (?=.*[A-Z])   -> must contain at least one uppercase letter
 	// (?=.*[0-9])   -> must contain at least one digit
@@ -32,9 +31,6 @@ public class ValidationUtil {
 	private static final String EMAIL_REGEX ="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    ValidationUtil(CustomUserDetails customUserDetails) {
-        this.customUserDetails = customUserDetails;
-    }
 
 	public Boolean validateUserAttributes(UserInfoDto userInfoDto) throws RuntimeException {
 		if(!validateEmail(userInfoDto.getEmail())) {

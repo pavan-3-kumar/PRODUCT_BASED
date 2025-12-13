@@ -1,6 +1,5 @@
 package com.interview.auth.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.interview.auth.AuthApplication;
 import com.interview.auth.Repo.UserRepository;
 import com.interview.auth.service.UserDetailsServiceImpl;
 
@@ -42,7 +40,6 @@ public class SecurityConfig {
 
 
     @Bean
-    @Autowired
     UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return new UserDetailsServiceImpl(userRepository,passwordEncoder);
 	}

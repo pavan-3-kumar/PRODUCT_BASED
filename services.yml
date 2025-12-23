@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest 
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'EXTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENERS_EXTERNAL_PORT: 9092
+      KAFKA_PROCESS_ROLES: controller,broker  
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql-8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Pavan@2003'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+#  usersvc:
+#    build: ./usersvc
+#    container_name: usersvc_consumer
+#    depends_on:
+#      - kafka
+#      - mysql
+#
+#  auth: 
+#    build: .
+#    container_name: auth_producer
+#    depends_on:
+#      - kafka
+#      - mysql
+  
+  
+volumes:
+  mysql-db:
+    driver: local

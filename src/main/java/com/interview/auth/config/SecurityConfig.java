@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.interview.auth.Repo.UserRepository;
+import com.interview.auth.kafka_eventProducer.UserInfoProducer;
 import com.interview.auth.service.UserDetailsServiceImpl;
 
 import lombok.Data;
@@ -28,20 +29,23 @@ import lombok.Data;
 public class SecurityConfig {
 
 
-
     private final PasswordEncoder passwordEncoder;
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserInfoProducer userInfoProducer;
 
-    SecurityConfig(PasswordEncoder passwordEncoder,UserDetailsServiceImpl userDetailsServiceImpl) {
+ 
+    SecurityConfig(UserInfoProducer userInfoProducer,UserDetailsServiceImpl userDetailsServiceImpl,PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.userInfoProducer = userInfoProducer;
     }
 
 
+
     @Bean
-    UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		return new UserDetailsServiceImpl(userRepository,passwordEncoder);
+    UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder,UserInfoProducer userInfoProducer) {
+		return new UserDetailsServiceImpl(userRepository,passwordEncoder,userInfoProducer);
 	}
 
     @Bean

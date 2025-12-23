@@ -3,7 +3,6 @@ package com.interview.auth.entities;
 import java.time.Instant;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import jakarta.persistence.Entity;

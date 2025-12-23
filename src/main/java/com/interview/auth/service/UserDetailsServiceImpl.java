@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.interview.auth.Repo.UserRepository;
 import com.interview.auth.entities.UserInfo;
+import com.interview.auth.kafka_eventProducer.UserInfoProducer;
 import com.interview.auth.model.UserInfoDto;
-import com.interview.auth.util.ValidationUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,13 +27,17 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService{
-	    @Autowired
+	 @Autowired
 	    private  UserRepository userRepository;
 	    // as this passwordencoder is an interface we have to create a bean in the config file.
 	    @Autowired
 	    private  PasswordEncoder passwordEncoder;
 //	    @Autowired
 //	    private ValidationUtil validationUtil;
+	    
+	    @Autowired
+	    private UserInfoProducer userInfoProducer;
+	    
 	  
 	    @Override
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
@@ -63,7 +67,9 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	    	}
 	    	String userId = UUID.randomUUID().toString();
 	    	 userRepository.save(new UserInfo(userId , userInfoDto.getUsername(),userInfoDto.getPassword(),new HashSet<>()));
+	    	 userInfoDto.setUserId(userId);
 	    	 // push event to QUEUE
+	    	 userInfoProducer.sendEventToKafka(userInfoDto);
 	    	 return true;
 	    }
 }

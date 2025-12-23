@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 import com.interview.auth.model.UserInfoDto;
-import com.interview.auth.service.CustomUserDetails;
 
 import lombok.extern.slf4j.Slf4j;
 

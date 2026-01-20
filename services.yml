@@ -1,23 +1,12 @@
 version: '3'
 
 services:
-#  zookeeper:
-#    image: zookeeper:latest
-#    environment:
-#      ZOOKEEPER_CLIENT_PORT: 2181
-#      ZOOKEEPER_TICK_TIME: 2000
-#    ports:
-#      - 2181:2181
-  
   kafka:
     image: confluentinc/cp-kafka:latest 
-#    depends_on:
-#      - zookeeper
     ports:
-      - 9092:9092
+      - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka:29092,EXTERNAL://localhost:9092'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
@@ -26,7 +15,8 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LISTENERS_EXTERNAL_PORT: 9092
-      KAFKA_PROCESS_ROLES: controller,broker  
+      KAFKA_PROCESS_ROLES: 'controller,broker'
+
   mysql:
     image: mysql:8.3.0
     container_name: mysql-8.3.0
@@ -45,6 +35,7 @@ services:
     volumes:
       - mysql-db:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
   auth: 
     image: auth_service
     build: .
@@ -60,12 +51,12 @@ services:
         condition: service_started
     develop:
       watch:
-        - path: ./target/auth-0.0.1-SNAPSHOT.jar  # Watch for new JAR files
-          action: rebuild            # Rebuild the container when JAR changes
+        - path: ./target/auth-0.0.1-SNAPSHOT.jar
+          action: rebuild
         - path: ./src/main/resources/application.properties
-          action: sync               # Just sync files if it's just a config change
+          action: sync
           target: /app/resources
-  
+
   usersvc:
     image: user_service
     build: ../usersvc
@@ -79,17 +70,56 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
-      
     develop:
       watch:
-        - path: ../usersvc/target/consumer-0.0.1-SNAPSHOT.jar  # Watch for new JAR files
-          action: rebuild            # Rebuild the container when JAR changes
+        - path: ../usersvc/target/consumer-0.0.1-SNAPSHOT.jar
+          action: rebuild
         - path: ../usersvc/src/main/resources/application.properties
-          action: sync               # Just sync files if it's just a config change
+          action: sync
           target: /app/resources
-  
-  
-  
+    
+  expensesvc:
+    image: expense_service
+    build: ../expensesvc
+    container_name: expensesvc_consumer
+    environment: 
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    develop:
+      watch:
+        - path: ../expensesvc/target/expensesvc-0.0.1-SNAPSHOT.jar
+          action: rebuild
+        - path: ../expensesvc/src/main/resources/application.properties
+          action: sync
+          target: /app/resources
+
+  datasciencesvc:
+    image: datascience_service
+    build: ../DA_SERVICE
+    container_name: datascience_producer
+    environment:
+      - FLASK_APP=src 
+    env_file:
+      - ../DA_SERVICE/src/.env 
+    ports:
+      - "8090:8090"
+    develop:
+      watch:
+        - path: ../DA_SERVICE/src
+          action: sync
+          target: /app/src
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
 volumes:
   mysql-db:
     driver: local

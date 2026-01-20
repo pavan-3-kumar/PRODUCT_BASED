@@ -15,8 +15,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class JwtService {
 
     public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
@@ -49,7 +51,11 @@ public class JwtService {
 	}
 	
 	private Boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
+		
+		Date expiry = extractExpiration(token);
+		log.info("came to token verification: "+expiry.toString());
+		log.info("current data is :"+new Date().toString());
+		return expiry.before(new Date());
 	}
 	
 	// we will get userDetails from the database
@@ -67,7 +73,7 @@ public class JwtService {
 				.setClaims(claims)
 				.setSubject(username)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*1))
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*15))
                 .signWith(getSignkey(), SignatureAlgorithm.HS256).compact();
 	}
 }

@@ -2,6 +2,7 @@ package com.interview.auth.service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,7 +14,10 @@ import com.interview.auth.Repo.UserRepository;
 import com.interview.auth.entities.RefreshToken;
 import com.interview.auth.entities.UserInfo;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class RefreshTokenService {
 	
 	@Autowired
@@ -33,7 +37,14 @@ public class RefreshTokenService {
 	}
 	
 	public Optional<RefreshToken> findByToken(String token){
-			return refreshTokenRepository.findByToken(token);
+		    log.info("given token is :"+token);
+			List<RefreshToken> all = refreshTokenRepository.findAll();
+			for(RefreshToken i : all) {
+				log.info(i+"\n");
+			}
+		   Optional<RefreshToken> resToken = refreshTokenRepository.findByToken(token);
+//		   log.info("refresh token from DB : "+resToken.get().getToken());
+			return resToken;
 	}
 	
 	public RefreshToken verifyExpirations(RefreshToken token) {

@@ -17,7 +17,10 @@ import com.interview.auth.response.JwtResponseDTO;
 import com.interview.auth.service.JwtService;
 import com.interview.auth.service.RefreshTokenService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class TokenController {
 	
 	 @Autowired
@@ -46,6 +49,8 @@ public class TokenController {
 	
 	@PostMapping("auth/v1/refreshToken")
 	public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenDto){
+		log.info("received token object:"+refreshTokenDto);
+		log.info("recieved token is :"+refreshTokenDto.getToken());
 		return new ResponseEntity<>(refreshTokenService.findByToken(refreshTokenDto.getToken())
 								  .map(refreshTokenService::verifyExpirations) // why we are writing :: means explained in the doc(PROJECT).
 								  .map(RefreshToken::getUserInfo)

@@ -2,6 +2,7 @@ package com.interview.auth.service;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,9 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	    	 // push event to QUEUE
 	    	 userInfoProducer.sendEventToKafka(userInfoDto);
 	    	 return true;
+	    }
+	    
+	    public String getUserByUsername(String userName){
+	        return Optional.of(userRepository.findByUsername(userName)).map(UserInfo::getUserId).orElse(null);
 	    }
 }
